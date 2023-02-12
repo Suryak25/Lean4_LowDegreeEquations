@@ -1,7 +1,7 @@
 import Lake
 open Lake DSL
 
-package «cubic_formula» {
+package «LowDegreeEquations» {
   -- add any package configuration options here
 }
 
