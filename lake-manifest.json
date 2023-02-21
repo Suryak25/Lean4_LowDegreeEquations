@@ -1,10 +1,10 @@
 {"version": 4,
- "packagesDir": "./lake-packages",
+ "packagesDir": "lake-packages",
  "packages":
  [{"git":
    {"url": "https://github.com/leanprover-community/mathlib4.git",
     "subDir?": null,
-    "rev": "a2ebfa0b10ae3c6c6fab602b04986cdd298ee886",
+    "rev": "359b44cad9a406cab9d01a1893fe41b2363a15c9",
     "name": "mathlib",
     "inputRev?": null}},
   {"git":
