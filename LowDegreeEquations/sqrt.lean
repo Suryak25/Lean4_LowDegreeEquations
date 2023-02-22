@@ -1,6 +1,6 @@
 import Mathlib
 
-opaque ℝ.sqrt (x: ℝ) : 0 ≤ x  → ℝ
+opaque ℝ.sqrt (x: ℝ) : x ≥ 0 → ℝ
 
 axiom ℝ.sqrt_pos (x: ℝ) : (pf : x ≥ 0) → ℝ.sqrt x pf ≥ 0
 
