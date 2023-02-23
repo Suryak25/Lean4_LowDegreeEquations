@@ -80,44 +80,57 @@ private lemma l'₁ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0) (h': a≠0): (b * ((-b
 
 -- set_option pp.all true in 
 --set_option maxHeartbeats 500000 in
-private lemma l'₂ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0) (h': a≠0): 
-  a *((-b * -b + -ℝ.sqrt (b * b - 4 * a * c) h * -b +
-          (-b * -ℝ.sqrt (b * b - 4 * a * c) h +
-            -ℝ.sqrt (b * b - 4 * a * c) h * -ℝ.sqrt (b * b - 4 * a * c) h)) /
+private lemma l'₂ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0): 
+  a *((-b * -b - ℝ.sqrt (b * b - 4 * a * c) h * -b -
+          (-b * ℝ.sqrt (b * b - 4 * a * c) h -
+            ℝ.sqrt (b * b - 4 * a * c) h * ℝ.sqrt (b * b - 4 * a * c) h)) /
                 (2 * (2 * a * a))) = 
-                  (2*a*b*b - 4*a*a*c - 2*a*b*ℝ.sqrt (b*b - 4*a*c) h)/(4*a*a) := by
-                    have l: -ℝ.sqrt (b * b - 4 * a * c) h * -ℝ.sqrt (b * b - 4 * a * c) h =
-                      ℝ.sqrt (b * b - 4 * a * c) h * ℝ.sqrt (b * b - 4 * a * c) h := by
-                      rw [neg_mul_neg]
-                    rw[l]
-                    have l₁: -b*-b = b*b := by
-                      rw [neg_mul_neg]
-                    rw[l₁]
-                    have l₂: -b*-ℝ.sqrt (b * b - 4 * a * c) h = b*ℝ.sqrt (b * b - 4 * a * c) h := by
-                      rw [neg_mul_neg]  
-                    rw[l₂]
-                    have l₃: -ℝ.sqrt (b * b - 4 * a * c) h * -b = b*ℝ.sqrt (b * b - 4 * a * c) h:= by
-                      rw [neg_mul_neg,mul_comm]
-                    rw[l₃]
+                  (2*a*b*b - 4*a*a*c + 2*a*b*ℝ.sqrt (b*b - 4*a*c) h)/(4*a*a) := by
                     conv=>  
                       lhs
                       rw [ℝ.sqrt_mul_self (b*b - 4*a*c) h]
                       simp only [mul_div,mul_add,mul_sub]
                       simp only [←mul_assoc]
                       simp [←two_mul_two]
-                      --rw [mul_right_comm (a:=a) (b:=ℝ.sqrt (b*b - 4*a*c) h) (c:=b)]
+                      rw [sub_eq_add_neg]
+                      rw [neg_sub]
+                      rw [sub_neg_eq_add]
                       rw [←add_assoc]
-                      rw [add_sub]
-                      rw [←mul_two (a:=a*b*b)]
-                      sorry
-                      --rw [←mul_two (a:=a * b * ℝ.sqrt (b * b - 4 * a * c) h)]
-                    ring
-                    
+                      rw [add_rotate]
+                      rw [add_rotate']
+                      rw [add_rotate']
+                      simp [←add_assoc]
+                      rw [add_assoc]
+                      rw[add_add_add_comm]
+                      rw [← mul_rotate]
+                      rw[mul_comm b a]
+                      rw [←mul_two (n :=a * b * ℝ.sqrt (b * b - 4 * a * c) h)]
+                      rw [sub_eq_add_neg (a * b * b)]
+                      rw [← add_rotate]
+                      rw [← mul_two]
+                      rw [add_rotate']
+                      rw[←add_assoc]
+                      rw [←sub_eq_add_neg]
+                      rw [mul_rotate (a:=a) (b:=4) (c:=a)]
+                      rw [mul_rotate]
+                      rw [mul_comm b 2,mul_mul_mul_comm]
+                      rw [←mul_assoc]
+                      rw [mul_comm (a * b * (ℝ.sqrt (b * b - 4 * a * c) h)) 2]
+                      rw [←mul_assoc]
+                      rw [←mul_assoc]
 
 theorem root₂_is_root (a b c : ℝ) (h:(b^2 - 4*a*c) ≥ 0) (h': a≠0): a*(root₂ a b c h)^2 + b*(root₂ a b c h) + c = 0 := by
   simp only [root₂, div_pow]
   simp only [pow_two, mul_left_comm, mul_sub, sub_mul] at h ⊢
   rw [l'₁ (h':=h')]
-  sorry
+  rw [l'₂]
+  ring_nf
+  simp only [pow_two]
+  simp [←mul_rotate (a:=a⁻¹*a⁻¹) (b:=a*a) (c:=c)]
+  rw [mul_mul_mul_comm]
+  rw[←one_div]
+  rw [one_div_mul_cancel (h:=h')]
+  rw [mul_one,one_mul]
+  rw [neg_add_self]
 
 end Quadratic
