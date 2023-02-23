@@ -79,7 +79,7 @@ private lemma l'₁ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0) (h': a≠0): (b * ((-b
     simp [←two_mul_two]
 
 -- set_option pp.all true in 
-set_option maxHeartbeats 500000 in
+--set_option maxHeartbeats 500000 in
 private lemma l'₂ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0) (h': a≠0): 
   a *((-b * -b + -ℝ.sqrt (b * b - 4 * a * c) h * -b +
           (-b * -ℝ.sqrt (b * b - 4 * a * c) h +
