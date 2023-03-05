@@ -11,7 +11,8 @@ This project is an attempt to implement and prove solutions to quadratic and cub
 * Implementing and proving Cardano's formula.
 * Proving that Cardano's roots are actually the roots of the cubic equation.
 * Proving that Cardano's roots are the only roots of the cubic equation.
-
+## Completed
+* Implementing the solutions of quadratic equation
 ## References
 * [Proofwiki](https://proofwiki.org/wiki/Cardano%27s_Formula)
 * [Wikipedia](https://en.wikipedia.org/wiki/Cubic_equation)
