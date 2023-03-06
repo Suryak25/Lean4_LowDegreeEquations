@@ -3,17 +3,20 @@ import Mathlib
 
 namespace Quadratic
 
-
+/-Defining the two roots of quadratic equation-/
 noncomputable def root₁ (a b c : ℝ) (h:(b^2 - 4*a*c) ≥ 0): ℝ := (-b + ℝ.sqrt (b^2 - 4*a*c) h) / (2*a)
 noncomputable def root₂(a b c : ℝ) (h:(b^2 - 4*a*c) ≥ 0): ℝ := (-b - ℝ.sqrt (b^2 - 4*a*c) h) / (2*a) 
 
---private axiom two_mul_two: (2:ℝ)*2 = 4
-def two_mul_two (R : Type) [Ring R] : (4: R) = (2 : R) * (2: R) := by /-divide and multiply by 2*2(:ℝ) = 4(:ℝ) -/
+def two_mul_two (R : Type) [Ring R] : (4: R) = (2 : R) * (2: R) := by /-proof that 2*ℝ * 2*ℝ = 4*ℝ -/
     have : (2: R) = (1: R) + (1: R) := by norm_cast
     rw [this, mul_add, mul_one]
     norm_cast
 
 private lemma l₁ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0) (h': a≠0): (b * ((-b + ℝ.sqrt (b * b - 4*a*c) h) / (2 * a))) = ((-(2*a*b*b)/(4*a*a)) + ((2*a*b*(ℝ.sqrt (b * b - 4*a*c) h))/(4*a*a))) := by
+/-Simplifying the term with power 1 of the root₁.
+The simplification in RHS is done by hand (Expected).
+In LHS theorems are used to simplify into the expected term.
+For this lemma h' is required as there is a stage in simplification where 2*a is multiplied and divided, hence proved that given h', 2*a ≠ 0 -/
   have h' : 2*a ≠ 0 := by
     simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, h', or_self, not_false_iff] 
   conv=>
@@ -31,6 +34,9 @@ private lemma l₁ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0) (h': a≠0): (b * ((-b 
     simp [←two_mul_two]
 
 private lemma l₂ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0):
+/-Simplifying the term with power 2 of root₁.
+The simplification RHS is the expected simplification (done by hand). 
+So, using theorems and ring tactic (on LHS) it is proved that the term actually reduces to hand simplified term-/
   a *((-b * -b + ℝ.sqrt (b * b - 4 * a * c) h * -b +
         (-b * ℝ.sqrt (b * b - 4 * a * c) h +
           ℝ.sqrt (b * b - 4 * a * c) h * ℝ.sqrt (b * b - 4 * a * c) h)) /
@@ -48,6 +54,10 @@ private lemma l₂ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0):
 
 
 theorem root₁_is_root (a b c : ℝ) (h:(b^2 - 4*a*c) ≥ 0) (h': a≠0): a*(root₁ a b c h)^2 + b*(root₁ a b c h) + c = 0 := by
+/-Proof that root₁ is actually the root of quadratic.
+Essentially it is simplification using various theorems, and split into major 3 terms out of which two are bigger terms
+and are simplified in private lemmas l₁ (specifically pass h:= a ≠ 0 as it involves multiplication and addition of 2*a) and l₂.
+Once the major 2 terms are simplified, its rewritten and then ring_nf tactic is applied along with some more simplification theorems-/
   simp only [root₁, div_pow]
   simp only [pow_two, mul_left_comm, mul_add, add_mul] at h ⊢
   rw [l₁ (h':=h')]
@@ -62,6 +72,10 @@ theorem root₁_is_root (a b c : ℝ) (h:(b^2 - 4*a*c) ≥ 0) (h': a≠0): a*(ro
   rw [neg_add_self]
 
 private lemma l'₁ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0) (h': a≠0): (b * ((-b - ℝ.sqrt (b * b - 4*a*c) h) / (2 * a))) = ((-(2*a*b*b)/(4*a*a)) - ((2*a*b*(ℝ.sqrt (b * b - 4*a*c) h))/(4*a*a))) := by
+/-Simplifying term with power 1 of root₂.
+The RHS is expected simplification (Done by hand).
+LHS indeed gets simplified to the expected term.
+This lemma requires h' and also proof that 2*a ≠ 0, as it is being multiplied and divided by 2*a -/
   have h' : 2*a ≠ 0 := by
     simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, h', or_self, not_false_iff] 
   conv=>
@@ -78,9 +92,10 @@ private lemma l'₁ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0) (h': a≠0): (b * ((-b
     simp only [←mul_assoc]
     simp [←two_mul_two]
 
--- set_option pp.all true in 
---set_option maxHeartbeats 500000 in
 private lemma l'₂ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0): 
+/-Simplifying term with power 2 of root₂.
+The RHS is the expected hand simplified term.
+The LHS gets simplified to expected term-/
   a *((-b * -b - ℝ.sqrt (b * b - 4 * a * c) h * -b -
           (-b * ℝ.sqrt (b * b - 4 * a * c) h -
             ℝ.sqrt (b * b - 4 * a * c) h * ℝ.sqrt (b * b - 4 * a * c) h)) /
@@ -120,6 +135,10 @@ private lemma l'₂ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0):
                       rw [←mul_assoc]
 
 theorem root₂_is_root (a b c : ℝ) (h:(b^2 - 4*a*c) ≥ 0) (h': a≠0): a*(root₂ a b c h)^2 + b*(root₂ a b c h) + c = 0 := by
+/-Proof that root₂ is actually the root of quadratic.
+Essentially it is simplification using various theorems, and split into major 3 terms out of which two are bigger terms
+and are simplified in private lemmas l'₁ (specifically pass h:= a ≠ 0 as it involves multiplication and addition of 2*a) and l'₂.
+Once the major 2 terms are simplified, its rewritten and then ring_nf tactic is applied along with some more simplification theorems-/
   simp only [root₂, div_pow]
   simp only [pow_two, mul_left_comm, mul_sub, sub_mul] at h ⊢
   rw [l'₁ (h':=h')]
