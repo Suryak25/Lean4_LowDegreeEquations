@@ -4,11 +4,11 @@ namespace Quadratic
 
 /-Defining the two roots of quadratic equation-/
 noncomputable def root₁ (a b c : ℝ) : ℝ :=
- (-b + Real.sqrt (b^2 - 4*a*c)) / (2*a)
+(-b + Real.sqrt (b^2 - 4*a*c)) / (2*a)
 
 /-Defining the two roots of quadratic equation-/
 noncomputable def root₂(a b c : ℝ) (h:(b^2 - 4*a*c) ≥ 0): ℝ :=
- (-b - Real.sqrt (b^2 - 4*a*c)) / (2*a) 
+(-b - Real.sqrt (b^2 - 4*a*c)) / (2*a) 
 
 def two_mul_two (R : Type) [Ring R] : (4: R) = (2 : R) * (2: R) := by /-proof that 2(ℝ) * 2(ℝ) = 4(ℝ) -/
     have : (2: R) = (1: R) + (1: R) := by norm_cast
