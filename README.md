@@ -9,8 +9,8 @@ This project is an attempt to implement and prove solutions to quadratic and cub
 ## Road Map
 * Implementing quadratic equations and its roots (only real solutions as $\mathbb{C}$ is not yet ported to lean4)
 * Proving the roots are actually the solution to the quadratic equation.
-* Proving that if roots exist for a Quadratic equation and then how many roots (Two distinct or one unique)
 * Proving that for a Quadratic equation there exist atmost two roots (distinct roots).
+* Proving that if roots exist for a Quadratic equation and then how many roots (Two distinct or one unique)
 ## Completed
 * Implementing quadratic equations and its roots
 * Proving the roots are actually the solution to the quadratic equation.
