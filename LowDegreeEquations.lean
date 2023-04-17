@@ -1,1 +1,1 @@
-import LowDegreeEquations.RootsofQuadratic
+import LowDegreeEquations.Quadratic
