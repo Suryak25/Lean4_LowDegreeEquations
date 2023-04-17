@@ -176,7 +176,7 @@ inductive QuadraticSolution (a b c : ℝ) where
 |oneSolution : (x : ℝ) → isSolution a b c x →
   (∀ y : ℝ, isSolution a b c y → y = x) → (QuadraticSolution a b c)
 |twoSolution : (x y : ℝ) → isSolution a b c x → isSolution a b c y →
-  (∀ z : ℝ, isSolution a b c z → z = x ∨
+  (∀ z : ℝ, isSolution a b c z → x≠y → z = x ∨
    z = y) → (QuadraticSolution a b c)
 
 /-
@@ -184,52 +184,88 @@ We need discriminant to determine whether the quadratic equation has one, two, o
 -/
 def discriminant (a b c : ℝ) : ℝ := b^2 - 4*a*c
 
+noncomputable def p_of_x (a b c x : ℝ) : ℝ := a*x^2 + b*x + c
+
+lemma p_of_x_factorised (a b c x : ℝ) (h_: p_of_x a b c α=0) (h_': p_of_x a b c β=0) (h: α≠β): p_of_x a α β x = a*(x-α)*(x-β) := by
+  let q_of_x (a α β x:ℝ) := a*(x-α)*(x-β)
+  let a₁ := b+α+β
+  let a₂ := -a*α*β 
+  have t: p_of_x - q_of_x = a₁*x + a₂ :=by
+    simp
+    
+    
+
+  sorry 
 /-
 We need to prove that the Quadratic equation has at most two unique solutions. Hence, we need to prove that if the Quadratic equation has three solutions, then two of the three solutions are the same. This is required condition for the QuadraticSolution type. We prove this lemma here.
 -/
-lemma QuadHasAtmostTwo (a b c α β γ : ℝ) (hα : isSolution a b c α) (hβ : isSolution a b c β) (hγ : isSolution a b c γ) :  γ = α ∨ γ = β := by
+lemma QuadHasAtmostTwo (a b c α β γ : ℝ) (hα : isSolution a b c α) (hβ : isSolution a b c β) (hγ : isSolution a b c γ) (h₁': α ≠ β ) :  γ = α ∨ γ = β := by
   unfold isSolution at hα hβ hγ
 
   sorry
-
-/-
-This is to rewrite the quadratic to (x + b/(2*a))^2 = (b^2-4*a*c)/(4*a^2). This can be used for no solution condition. As for no solution b^2-4*a*c < 0, hence by applying Real sqrt on both sides we get x + b/(2*a) > 0 and RHS not ℝ. This is a contradiction. 
--/
-private lemma l (a b c : ℝ) (h₁': a≠0):  := by
-  sorry
-
 /-
 This is the function that solves the Quadratic equation. We use the discriminant to determine whether the equation has one, two, or no solutions. If the discriminant is greater than 0, then the equation has two solutions. If the discriminant is equal to 0, then the equation has one solution. If the discriminant is less than 0, then the equation has no solution.
 -/
 noncomputable def solveQuadratic (a b c : ℝ) (h₁: a≠0 ) : QuadraticSolution a b c := 
-if discriminant a b c > 0 then
+have h₁ : 4*a ≠ 0 := by
+  simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, h₁, or_self, not_false_iff]
+if hd: discriminant a b c > 0 then
   let x := (-b + Real.sqrt (discriminant a b c))/(2*a)
   let y := (-b - Real.sqrt (discriminant a b c))/(2*a)
+  let h₂':= x≠y 
   have hx : isSolution a b c x := by
     dsimp 
     unfold discriminant
     unfold isSolution
-    --apply root₁_is_root a b c
-
+    apply root₁_is_root a b c
+    unfold discriminant at hd
+    apply le_of_lt hd
+    assumption
   have hy : isSolution a b c y := by
     dsimp
     unfold discriminant
     unfold isSolution
-    apply root₂_is_root a b c
-
+    apply root₂_is_root a b c 
+    apply le_of_lt hd
+    assumption
   QuadraticSolution.twoSolution x y 
     hx hy (fun z hz => QuadHasAtmostTwo a b c x y z hx hy hz)
-else if discriminant a b c = 0 then
+else if hd': discriminant a b c = 0 then
   let x := -b/(2*a)
   have hx : isSolution a b c x := by
     dsimp
+    simp [discriminant] at hd'
     unfold isSolution
-    rw[pow_two]
+    have ld : a * (-b / (2 * a)) ^ 2 + b * (-b / (2 * a)) + c = (b^2 - 4 * a * c) * 1 / (4 * a) := by 
+      conv=>
+        lhs
+        simp [pow_two]
+        rw [←mul_assoc,mul_rotate]
+        rw [mul_assoc]
+        simp [div_mul_comm]
+        rw [← div_one (a:=c)]
+        rw [← mul_div_mul_right (a:=c) (c:=4*a) (hc:=h₁),←mul_assoc (a:=1)]
+        rw [←mul_assoc (a:=c),mul_rotate]
+        rw[mul_rotate (a:=1),mul_one]
+        simp [mul_div] 
+        rw [← mul_assoc (a:=-b/(2*a))]
+        --simp [mul_div]
+        rw [div_mul_div_comm]
+        rw [mul_mul_mul_comm]
+        simp [← two_mul_two,← mul_assoc]
+        rw [← mul_div_mul_right (a:=-(b*b)) (c:=2),← mul_comm]
+        ring_nf
 
-    sorry
-  QuadraticSolution.oneSolution x hx (fun y hy => by cases (QuadHasAtmostTwo a b c x x y hx hx hy) <;> assumption)
+
+      sorry
+    rw [ld]
+    rw [hd']
+    simp [mul_zero]
+
+  QuadraticSolution.oneSolution x hx (fun y hy => by 
+  
+  sorry)
 else
   QuadraticSolution.noSolution (fun x => sorry) 
-
 
 end Quadratic
