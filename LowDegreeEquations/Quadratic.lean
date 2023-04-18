@@ -2,6 +2,9 @@ import Mathlib
 
 namespace Quadratic
 
+/-
+Global variables a b c are defined as real numbers. And a ≠ 0 hypothesis (very important condition for the equation to be quadratic) defined globally.
+-/
 variable (a b c : ℝ) (a_neq_zero : a ≠ 0)
 
 /-Defining the two roots of quadratic equation-/
@@ -302,8 +305,8 @@ lemma QuadHasAtmostTwo (α β γ : ℝ) (hα : isSolution a b c α) (hβ : isSol
   simp [h_'] at h₄
     
   have h₅: γ = α ∨ γ = β := by
-    sorry
-
+    simp [sub_eq_zero] at h₄
+    assumption
   exact h₅
 /-
 This is the function that solves the Quadratic equation. We use the discriminant to determine whether the equation has one, two, or no solutions. If the discriminant is greater than 0, then the equation has two solutions. If the discriminant is equal to 0, then the equation has one solution. If the discriminant is less than 0, then the equation has no solution.
@@ -333,7 +336,7 @@ if hd: discriminant a b c > 0 then
     assumption
 
   QuadraticSolution.twoSolution x y 
-    hx hy (fun z hz => QuadHasAtmostTwo x y z hx hy hz)
+    hx hy (fun z hz => QuadHasAtmostTwo a b c a_neq_zero x y z hx hy hz)
   
 else if hd': discriminant a b c = 0 then
   let x := -b/(2*a)
