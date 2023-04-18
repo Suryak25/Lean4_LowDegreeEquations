@@ -2,6 +2,8 @@ import Mathlib
 
 namespace Quadratic
 
+variable (a b c : ℝ) (a_neq_zero : a ≠ 0)
+
 /-Defining the two roots of quadratic equation-/
 noncomputable def root₁ (a b c : ℝ) : ℝ :=
 (-b + Real.sqrt (b^2 - 4*a*c)) / (2*a)
@@ -14,14 +16,16 @@ def two_mul_two (R : Type) [Ring R] : (4: R) = (2 : R) * (2: R) := by /-proof th
     have : (2: R) = (1: R) + (1: R) := by norm_cast
     rw [this, mul_add, mul_one]
     norm_cast
+
 /-- Simplifying the term with power 1 of the root₁.
 The simplification in RHS is done by hand (Expected).
 In LHS theorems are used to simplify into the expected term.
 For this lemma h' is required as there is a stage in simplification where 2*a is multiplied and divided, hence proved that given h', 2*a ≠ 0 -/
-private lemma l₁ (a b c : ℝ) (h': a≠0): (b * ((-b + Real.sqrt (b * b - 4*a*c)) / (2 * a))) = ((-(2*a*b*b)/(4*a*a)) + ((2*a*b*(Real.sqrt (b * b - 4*a*c)))/(4*a*a))) := by
+private lemma l₁ (a_neq_zero: a≠0): (b * ((-b + Real.sqrt (b * b - 4*a*c)) / (2 * a))) = ((-(2*a*b*b)/(4*a*a)) + ((2*a*b*(Real.sqrt (b * b - 4*a*c)))/(4*a*a))) := by
 
   have h' : 2*a ≠ 0 := by
-    simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, h', or_self, not_false_iff] 
+    simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, a_neq_zero, or_self, not_false_iff]
+   
   conv=>
     lhs
     simp only [add_div,mul_div,mul_add, add_mul]
@@ -40,7 +44,7 @@ private lemma l₁ (a b c : ℝ) (h': a≠0): (b * ((-b + Real.sqrt (b * b - 4*a
 The simplification RHS is the expected simplification (done by hand). 
 So, using theorems and ring tactic (on LHS) it is proved that the term actually reduces to hand simplified term-/
 
-private lemma l₂ (a b c : ℝ) (h:0 ≤ (b*b - 4*a*c)):
+private lemma l₂ (h:0 ≤ (b*b - 4*a*c)):
   a *((-b * -b + Real.sqrt (b * b - 4 * a * c) * -b +
         (-b * Real.sqrt (b * b - 4 * a * c) +
           Real.sqrt (b * b - 4 * a * c) * Real.sqrt (b * b - 4 * a * c))) /
@@ -61,19 +65,20 @@ Essentially it is simplification using various theorems, and split into major 3 
 and are simplified in private lemmas l₁ (specifically pass h:= a ≠ 0 as it involves multiplication and addition of 2*a) and l₂.
 Once the major 2 terms are simplified, its rewritten and then ring_nf tactic is applied along with some more simplification theorems-/
 
-theorem root₁_is_root (a b c : ℝ) (h:(b^2 - 4*a*c) ≥ 0) (h': a≠0): a*(root₁ a b c)^2 + b*(root₁ a b c) + c = 0 := by
+theorem root₁_is_root (h:(b^2 - 4*a*c) ≥ 0) (a_neq_zero: a≠0): a*(root₁ a b c)^2 + b*(root₁ a b c) + c = 0 := by
   simp only [root₁, div_pow]
   simp only [pow_two, mul_left_comm, mul_add, add_mul] at h ⊢
-  rw [l₁ (h':=h')]
+  rw [l₁]
   rw [l₂]
   ring_nf
   simp only [pow_two]
   simp [←mul_rotate (a:=a⁻¹*a⁻¹) (b:=a*a) (c:=c)]
   rw [mul_mul_mul_comm]
   rw[←one_div]
-  rw [one_div_mul_cancel (h:=h')]
+  rw [one_div_mul_cancel (h:=a_neq_zero)]
   rw [mul_one,one_mul]
   rw [neg_add_self]
+  assumption
   assumption
 
 /-- Simplifying term with power 1 of root₂.
@@ -81,10 +86,11 @@ The RHS is expected simplification (Done by hand).
 LHS indeed gets simplified to the expected term.
 This lemma requires h' and also proof that 2*a ≠ 0, as it is being multiplied and divided by 2*a -/
 
-private lemma l'₁ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0) (h': a≠0): (b * ((-b - Real.sqrt (b * b - 4*a*c)) / (2 * a))) = ((-(2*a*b*b)/(4*a*a)) - ((2*a*b*(Real.sqrt (b * b - 4*a*c)))/(4*a*a))) := by
+private lemma l'₁ (a_neq_zero: a≠0): (b * ((-b - Real.sqrt (b * b - 4*a*c)) / (2 * a))) = ((-(2*a*b*b)/(4*a*a)) - ((2*a*b*(Real.sqrt (b * b - 4*a*c)))/(4*a*a))) := by
 
   have h' : 2*a ≠ 0 := by
-    simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, h', or_self, not_false_iff] 
+    simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, a_neq_zero, or_self, not_false_iff] 
+  
   conv=>
     lhs
     simp only [sub_div,mul_div,mul_sub, add_mul]
@@ -103,7 +109,7 @@ private lemma l'₁ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0) (h': a≠0): (b * ((-b
 The RHS is the expected hand simplified term.
 The LHS gets simplified to expected term-/
 
-private lemma l'₂ (a b c : ℝ) (h:(b*b - 4*a*c) ≥ 0): 
+private lemma l'₂ (h:(b*b - 4*a*c) ≥ 0): 
   a *((-b * -b - Real.sqrt (b * b - 4 * a * c) * -b -
           (-b * Real.sqrt (b * b - 4 * a * c) -
             Real.sqrt (b * b - 4 * a * c) * Real.sqrt (b * b - 4 * a * c))) /
@@ -147,17 +153,17 @@ Essentially it is simplification using various theorems, and split into major 3 
 and are simplified in private lemmas l'₁ (specifically pass h:= a ≠ 0 as it involves multiplication and addition of 2*a) and l'₂.
 Once the major 2 terms are simplified, its rewritten and then ring_nf tactic is applied along with some more simplification theorems-/
 
-theorem root₂_is_root (a b c : ℝ) (h:(b^2 - 4*a*c) ≥ 0) (h': a≠0): a*(root₂ a b c h)^2 + b*(root₂ a b c h) + c = 0 := by
+theorem root₂_is_root (h:(b^2 - 4*a*c) ≥ 0) (a_neq_zero: a≠0): a*(root₂ a b c h)^2 + b*(root₂ a b c h) + c = 0 := by
   simp only [root₂, div_pow]
   simp only [pow_two, mul_left_comm, mul_sub, sub_mul] at h ⊢
-  rw [l'₁ (h':=h')]
+  rw [l'₁]
   rw [l'₂]
   ring_nf
   simp only [pow_two]
   simp [←mul_rotate (a:=a⁻¹*a⁻¹) (b:=a*a) (c:=c)]
   rw [mul_mul_mul_comm]
   rw[←one_div]
-  rw [one_div_mul_cancel (h:=h')]
+  rw [one_div_mul_cancel (h:=a_neq_zero)]
   rw [mul_one,one_mul]
   rw [neg_add_self]
   assumption
@@ -166,7 +172,7 @@ theorem root₂_is_root (a b c : ℝ) (h:(b^2 - 4*a*c) ≥ 0) (h': a≠0): a*(ro
 /-
 Define a type to represent the solutions to a quadratic equation.
 -/
-def isSolution (a b c x : ℝ) : Prop := a*x^2 + b*x + c = 0
+def isSolution (x : ℝ) : Prop := a*x^2 + b*x + c = 0
 
 /-
 We want to solve the quadratic equation ax^2 + bx + c = 0. For that we need to find whether it has no solution (no roots possible), one solution (one unique root, root₁ = root₂), or two solutions (two unique roots, root₁ and root₂). We define a type to represent this. We also define a function to solve the Quadratic equation.
@@ -182,17 +188,18 @@ inductive QuadraticSolution (a b c : ℝ) where
 /-
 We need discriminant to determine whether the quadratic equation has one, two, or no solutions. We define it here.
 -/
-def discriminant (a b c : ℝ) : ℝ := b^2 - 4*a*c
+def discriminant : ℝ := b^2 - 4*a*c
 
 /-
 Defining Quadratic Equation in the form of quadratic polynomial.
 -/
-noncomputable def p_of_x (a b c x : ℝ) : ℝ := a*x^2 + b*x + c
+noncomputable def p_of_x (x : ℝ) : ℝ := a*x^2 + b*x + c
 
 /-
 Proving that p_of_x (p(x)) can be factorised into a*(x-α)*(x-β) where α and β are the roots of the quadratic polynomial. Way is assuming there exist q(x) = a*(x-α)*(x-β) such that p(x) - q(x) = a₁*x + a₂ (a₁ a₂:ℝ) and using the fact that p(x) = 0 at α and β, we can prove that p(x) = q(x) at α and β. Hence, p(x) = q(x) for all x.
 -/
-lemma p_of_x_factorised (a α β x : ℝ) (h_: p_of_x a b c α=0) (h_': p_of_x a b c β=0) (h: α≠β): p_of_x a b c x = a*(x-α)*(x-β) := by
+lemma p_of_x_factorised (x : ℝ) (h_: p_of_x a b c α=0) (h_': p_of_x a b c β=0) (h: α≠β): p_of_x a b c x = a*(x-α)*(x-β) := by
+
   let q_of_x ( x:ℝ) := a*(x-α)*(x-β)
   let a₁ := b+α*a+β*a
   let a₂ := c-a*α*β 
@@ -210,6 +217,7 @@ lemma p_of_x_factorised (a α β x : ℝ) (h_: p_of_x a b c α=0) (h_': p_of_x a
       rw [mul_rotate (a:=a),mul_rotate (a:=x)]
       rw [add_right_comm (a:=b*x),add_right_comm (a:=b*x+α*a*x)]
       rw [← distrib_three_right,← add_sub]
+    
   have t₁: p_of_x a b c x = q_of_x x + a₁*x + a₂ := by
     simp only [t]
     ring_nf
@@ -240,11 +248,15 @@ lemma p_of_x_factorised (a α β x : ℝ) (h_: p_of_x a b c α=0) (h_': p_of_x a
   rw [zero_add] at t₂ t₃
 
   have t₄: a₁ = 0 := by
-    rw [←t₃] at t₂ 
-    simp [add_right_cancel (a:=a₁*α) (b:=a₂) (c:=a₁*β)] at t₂  
-    by_cases t₂: α = β
-    · contradiction
-    · sorry
+    by_cases h₂: a₁ = 0
+    · assumption
+    · rw [←t₃] at t₂
+      let t₂' := add_right_cancel t₂
+      let t₂'' : a₁⁻¹ * a₁ * α = a₁⁻¹ * a₁ * β   := by
+        rw [mul_assoc, mul_assoc, t₂']
+      let h₃ := inv_mul_cancel h₂
+      rw [h₃, one_mul, one_mul] at t₂''
+      contradiction
 
   have t₅: q_of_x α + a₁*α + a₂ = 0 := by
     simp only [t₁]
@@ -264,26 +276,39 @@ lemma p_of_x_factorised (a α β x : ℝ) (h_: p_of_x a b c α=0) (h_': p_of_x a
 /-
 We need to prove that the Quadratic equation has at most two unique solutions. This is done using factorised form of Quadratic polynomial and if given a third unique solution gamma it can be showed that it has to be either α or β. This is required condition for the QuadraticSolution type. We prove this lemma here.
 -/
-lemma QuadHasAtmostTwo (a b c α β γ : ℝ) (hα : isSolution a b c α) (hβ : isSolution a b c β) (hγ : isSolution a b c γ) (h₁': α ≠ β ) :  γ = α ∨ γ = β := by
+lemma QuadHasAtmostTwo (α β γ : ℝ) (hα : isSolution a b c α) (hβ : isSolution a b c β) (hγ : isSolution a b c γ) (h₁': α ≠ β ) :  γ = α ∨ γ = β := by
+
   have h₁: p_of_x a b c α = 0 := by
     unfold isSolution at hα
     assumption
+
   have h₂: p_of_x a b c β = 0 := by
     unfold isSolution at hβ
     assumption
-  have h₃: p_of_x a b c γ = a*(γ-α)*(γ-β) := by
-    unfold p_of_x_factorised a α β γ h₁ h₂ h₁'
-    assumption
-    
-  -- have h₃: = 0 := by
-  --   unfold p_of_x_factorised a α β γ at 
 
+  have h₃: p_of_x a b c γ = a*(γ-α)*(γ-β) := by
+    apply p_of_x_factorised a b c γ h₁ h₂ h₁'
   
-  sorry
+  have h₄: p_of_x a b c γ = 0 := by
+    unfold isSolution at hγ
+    assumption
+
+  rw [h₃] at h₄
+
+  simp [a_neq_zero] at h₄
+  
+  have h_': a ≠ 0 := by
+    simp [a_neq_zero]
+  simp [h_'] at h₄
+    
+  have h₅: γ = α ∨ γ = β := by
+    sorry
+
+  exact h₅
 /-
 This is the function that solves the Quadratic equation. We use the discriminant to determine whether the equation has one, two, or no solutions. If the discriminant is greater than 0, then the equation has two solutions. If the discriminant is equal to 0, then the equation has one solution. If the discriminant is less than 0, then the equation has no solution.
 -/
-noncomputable def solveQuadratic (a b c : ℝ) (h₁: a≠0 ) : QuadraticSolution a b c := 
+noncomputable def solveQuadratic : QuadraticSolution a b c := 
 
 if hd: discriminant a b c > 0 then
   let x := (-b + Real.sqrt (discriminant a b c))/(2*a)
@@ -308,7 +333,7 @@ if hd: discriminant a b c > 0 then
     assumption
 
   QuadraticSolution.twoSolution x y 
-    hx hy (fun z hz => QuadHasAtmostTwo a b c x y z hx hy hz)
+    hx hy (fun z hz => QuadHasAtmostTwo x y z hx hy hz)
   
 else if hd': discriminant a b c = 0 then
   let x := -b/(2*a)
@@ -323,24 +348,6 @@ else if hd': discriminant a b c = 0 then
         lhs
         simp [neg_sq]
         ring_nf
-        -- simp [pow_two]
-        -- rw [←mul_assoc,mul_rotate]
-        -- rw [mul_assoc]
-        -- simp [div_mul_comm]
-        -- rw [← div_one (a:=c)]
-        -- rw [← mul_div_mul_right (a:=c) (c:=4*a) (hc:=h₁),←mul_assoc (a:=1)]
-        -- rw [←mul_assoc (a:=c),mul_rotate]
-        -- rw[mul_rotate (a:=1),mul_one]
-        -- simp [mul_div] 
-        -- rw [← mul_assoc (a:=-b/(2*a))]
-        -- rw [div_mul_div_comm]
-        -- rw [mul_mul_mul_comm]
-        -- simp [← two_mul_two,← mul_assoc]
-        -- rw [← mul_div_mul_right (a:=-(b*b)) (c:=2),← mul_comm]
-        -- rw [mul_rotate (a:=2), mul_rotate (a:=a),←two_mul_two]
-        -- ring_nf
-        -- rw [pow_two (a:=a⁻¹),pow_two,← mul_assoc]
-        -- ring
       sorry
     
     rw [ld]
