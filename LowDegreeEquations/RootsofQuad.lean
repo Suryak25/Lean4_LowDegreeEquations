@@ -222,23 +222,20 @@ else if hd': discriminant a b c = 0 then
     have hc': (2 : ℝ)  ≠ 0 := by
       simp [a_neq_zero]
 
-    conv=>
-      lhs
-      simp [neg_sq]
-      simp [pow_two, mul_assoc, mul_comm, mul_left_comm]
-      rw [←mul_assoc]
-      simp [← Quadratic.two_mul_two]
-      rw [add_rotate,mul_comm (a:=a)]
-      rw [le]
-      rw [← mul_div_mul_right (a:=-(b*b)) (c:=2) (hc:=hc'),←div_one (a:=c)]
-      rw [← mul_div_mul_right (a:=c) (c:=4*a) (hc:=hc),←mul_assoc,←mul_assoc,mul_rotate (a:=1),mul_one, mul_rotate, mul_rotate,← Quadratic.two_mul_two]
-      rw [le',mul_rotate]
-      simp [add_div]
-      simp [←add_div]
-      rw [←hd',add_rotate,←mul_two]
-      simp
-      
-      
+    simp [neg_sq]
+    simp [pow_two, mul_assoc, mul_comm, mul_left_comm]
+    rw [←mul_assoc]
+    simp [← Quadratic.two_mul_two]
+    rw [add_rotate,mul_comm (a:=a)]
+    rw [le]
+    rw [← mul_div_mul_right (a:=-(b*b)) (c:=2) (hc:=hc'),←div_one (a:=c)]
+    rw [← mul_div_mul_right (a:=c) (c:=4*a) (hc:=hc),←mul_assoc,←mul_assoc,mul_rotate (a:=1),mul_one, mul_rotate, mul_rotate,← Quadratic.two_mul_two]
+    rw [le',mul_rotate]
+    simp [add_div]
+    simp [←add_div]
+    rw [←hd',add_rotate,←mul_two]
+    simp
+    assumption
   
   QuadraticSolution.oneSolution x hx (fun y hy => by 
   simp [discriminant] at hd'
@@ -263,17 +260,23 @@ else if hd': discriminant a b c = 0 then
   rw [←h₁] at hy
   rw [←hy] at hx
 
-  have h₂: a * y ^ 2 + b * y + b ^ 2 / (4 * a) = a*(y + (b/(2*a)))^2:= by
-    conv=>
-      rhs
-      simp [pow_two,←mul_assoc]
-      simp [mul_add]
-      simp [add_mul,mul_div,add_div]
-      rw [le_,le₁,le₂,←add_assoc,add_rotate (a:=a*y*y),←mul_two]
-      rw [mul_rotate (a:=b/2),mul_rotate (a:=y),le_',le_'',←pow_two]
-      rw [le_''']    
-            
-  sorry)
+  have h₂: a*(y + (b/(2*a)))^2 = a * y ^ 2 + b * y + b ^ 2 / (4 * a):= by
+    simp [pow_two,←mul_assoc]
+    simp [mul_add]
+    simp [add_mul,mul_div,add_div]
+    rw [le_,le₁,le₂,←add_assoc,add_rotate (a:=a*y*y),←mul_two]
+    rw [mul_rotate (a:=b/2),mul_rotate (a:=y),le_',le_'',←pow_two]
+    rw [le_''']  
+    assumption
+    assumption  
+
+  simp [hy] at h₂
+  simp [a_neq_zero] at h₂
+  
+  have h₃: y = -b/(2*a) :=by
+    sorry
+  
+  assumption)
 
 else
   QuadraticSolution.noSolution (fun x => by
