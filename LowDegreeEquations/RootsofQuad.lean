@@ -138,6 +138,44 @@ lemma QuadHasAtmostTwo (α β γ : ℝ) (hα : isSolution a b c α) (hβ : isSol
     simp [sub_eq_zero] at h₄
     assumption
   exact h₅
+
+/--To perform simplifications in the discriminant = 0 case part of solveQuadratic
+-/
+private lemma le: b*(-b/(2*a)) = -(b*b)/(2*a) := by
+  simp [mul_neg, mul_div, neg_div]    
+
+private lemma le': a*(b*b/(a * a * 4)) = b*b/(4*a) := by
+  rw [mul_div,← mul_assoc,mul_rotate]
+  conv=>
+    lhs
+    rw [←mul_rotate (a:=4),mul_div_mul_right (c:=a) (hc:=a_neq_zero)]
+
+private lemma le_: a * b / (2 * a) = b / 2 := by
+  simp [mul_div, mul_comm,mul_div_mul_left (c:=a) (hc:=a_neq_zero)]
+
+private lemma le₁: b / 2 * b / (2 * a) = b * b / (4 * a) := by
+  simp [mul_div, mul_comm]
+  rw [←mul_one (a:=2),←mul_assoc,mul_rotate,mul_rotate,one_mul,mul_comm (a:=a)]
+  simp [div_div,←mul_assoc,←Quadratic.two_mul_two]
+  simp [mul_comm]
+
+private lemma le₂: a * y * b / (2 * a) = b/2 * y := by
+  conv=>
+    lhs
+    rw [mul_comm (a:=a),mul_assoc,←mul_div,mul_comm]
+    rw [mul_comm (a:=a),mul_div_mul_right (c:=a) (hc:=a_neq_zero)]
+
+private lemma le_': 2*(b/2) = b := by
+  simp [mul_div, mul_comm]
+
+private lemma le_'': a*y*y = a*y^2:=by
+  conv=>
+    lhs
+    rw [mul_rotate,←pow_two,mul_comm]
+
+private lemma le_''': b * y + a * y ^ 2 = a * y ^ 2 + b * y := by
+  rw [←add_comm (a:=b*y)]
+
 /--This is the function that solves the Quadratic equation. We use the discriminant to determine whether the equation has one, two, or no solutions. If the discriminant is greater than 0, then the equation has two solutions. If the discriminant is equal to 0, then the equation has one solution. If the discriminant is less than 0, then the equation has no solution-/
 
 noncomputable def solveQuadratic : QuadraticSolution a b c := 
@@ -172,21 +210,70 @@ else if hd': discriminant a b c = 0 then
 
   have hx : isSolution a b c x := by
     dsimp
-    simp [discriminant] at hd'
+    simp [discriminant,pow_two] at hd'
+    have hd': b*b = 4*a*c:= by
+      simp [sub_eq_iff_eq_add] at hd'
+      assumption
+
     unfold isSolution
 
-    have ld : a * (-b / ((2 : ℝ) * a)) ^ 2 + b * (-b / ((2: ℝ) * a)) + c = (b^2 - (4: ℝ) * a * c) / ((4: ℝ) * a) := by 
-      conv=>
-        lhs
-        simp [neg_sq]
-        ring_nf
-      sorry
-    
-    rw [ld]
-    rw [hd']
-    simp [mul_zero]
+    have hc: 4*a ≠ 0 := by
+      simp [a_neq_zero] 
+    have hc': (2 : ℝ)  ≠ 0 := by
+      simp [a_neq_zero]
+
+    conv=>
+      lhs
+      simp [neg_sq]
+      simp [pow_two, mul_assoc, mul_comm, mul_left_comm]
+      rw [←mul_assoc]
+      simp [← Quadratic.two_mul_two]
+      rw [add_rotate,mul_comm (a:=a)]
+      rw [le]
+      rw [← mul_div_mul_right (a:=-(b*b)) (c:=2) (hc:=hc'),←div_one (a:=c)]
+      rw [← mul_div_mul_right (a:=c) (c:=4*a) (hc:=hc),←mul_assoc,←mul_assoc,mul_rotate (a:=1),mul_one, mul_rotate, mul_rotate,← Quadratic.two_mul_two]
+      rw [le',mul_rotate]
+      simp [add_div]
+      simp [←add_div]
+      rw [←hd',add_rotate,←mul_two]
+      simp
+      
+      
   
-  QuadraticSolution.oneSolution x hx (fun y hy => by sorry)
+  QuadraticSolution.oneSolution x hx (fun y hy => by 
+  simp [discriminant] at hd'
+  unfold isSolution at hy; unfold isSolution at hx
+  
+  have hc: 4*a ≠ 0 := by
+      simp [a_neq_zero]
+  have hc': (2 : ℝ)  ≠ 0 := by
+      simp [a_neq_zero]
+  
+  have h_: b^2/(4*a) - c = 0 := by
+    rw [←div_one (a:=c),←mul_div_mul_right (a:=c) (c:=4*a) (hc:=hc),←mul_assoc,←mul_assoc,mul_rotate (a:=1),mul_one]
+    rw [mul_rotate,←sub_div]
+    simp [div_eq_iff_eq_mul]
+    simp [a_neq_zero]
+    assumption
+  
+  have h₁: b^2/(4*a) = c:= by
+    simp [sub_eq_iff_eq_add] at h_
+    assumption
+
+  rw [←h₁] at hy
+  rw [←hy] at hx
+
+  have h₂: a * y ^ 2 + b * y + b ^ 2 / (4 * a) = a*(y + (b/(2*a)))^2:= by
+    conv=>
+      rhs
+      simp [pow_two,←mul_assoc]
+      simp [mul_add]
+      simp [add_mul,mul_div,add_div]
+      rw [le_,le₁,le₂,←add_assoc,add_rotate (a:=a*y*y),←mul_two]
+      rw [mul_rotate (a:=b/2),mul_rotate (a:=y),le_',le_'',←pow_two]
+      rw [le_''']    
+            
+  sorry)
 
 else
   QuadraticSolution.noSolution (fun x => by

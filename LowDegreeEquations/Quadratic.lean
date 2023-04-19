@@ -25,7 +25,7 @@ The simplification in RHS is done by hand (Expected).
 In LHS theorems are used to simplify into the expected term.
 For this lemma h' is required as there is a stage in simplification where 2*a is multiplied and divided, hence proved that given h', 2*a ≠ 0 -/
 
-lemma l₁ (a_neq_zero: a≠0): (b * ((-b + Real.sqrt (b * b - 4*a*c)) / (2 * a))) = ((-(2*a*b*b)/(4*a*a)) + ((2*a*b*(Real.sqrt (b * b - 4*a*c)))/(4*a*a))) := by
+private lemma l₁ (a_neq_zero: a≠0): (b * ((-b + Real.sqrt (b * b - 4*a*c)) / (2 * a))) = ((-(2*a*b*b)/(4*a*a)) + ((2*a*b*(Real.sqrt (b * b - 4*a*c)))/(4*a*a))) := by
 
   have h' : 2*a ≠ 0 := by
     simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, a_neq_zero, or_self, not_false_iff]
@@ -48,7 +48,7 @@ lemma l₁ (a_neq_zero: a≠0): (b * ((-b + Real.sqrt (b * b - 4*a*c)) / (2 * a)
 The simplification RHS is the expected simplification (done by hand). 
 So, using theorems and ring tactic (on LHS) it is proved that the term actually reduces to hand simplified term-/
 
-lemma l₂ (h:0 ≤ (b*b - 4*a*c)):
+private lemma l₂ (h:0 ≤ (b*b - 4*a*c)):
   a *((-b * -b + Real.sqrt (b * b - 4 * a * c) * -b +
         (-b * Real.sqrt (b * b - 4 * a * c) +
           Real.sqrt (b * b - 4 * a * c) * Real.sqrt (b * b - 4 * a * c))) /
@@ -90,7 +90,7 @@ The RHS is expected simplification (Done by hand).
 LHS indeed gets simplified to the expected term.
 This lemma requires h' and also proof that 2*a ≠ 0, as it is being multiplied and divided by 2*a -/
 
-lemma l'₁ (a_neq_zero: a≠0): (b * ((-b - Real.sqrt (b * b - 4*a*c)) / (2 * a))) = ((-(2*a*b*b)/(4*a*a)) - ((2*a*b*(Real.sqrt (b * b - 4*a*c)))/(4*a*a))) := by
+private lemma l'₁ (a_neq_zero: a≠0): (b * ((-b - Real.sqrt (b * b - 4*a*c)) / (2 * a))) = ((-(2*a*b*b)/(4*a*a)) - ((2*a*b*(Real.sqrt (b * b - 4*a*c)))/(4*a*a))) := by
 
   have h' : 2*a ≠ 0 := by
     simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, a_neq_zero, or_self, not_false_iff] 
@@ -113,7 +113,7 @@ lemma l'₁ (a_neq_zero: a≠0): (b * ((-b - Real.sqrt (b * b - 4*a*c)) / (2 * a
 The RHS is the expected hand simplified term.
 The LHS gets simplified to expected term-/
 
-lemma l'₂ (h:(b*b - 4*a*c) ≥ 0): 
+private lemma l'₂ (h:(b*b - 4*a*c) ≥ 0): 
   a *((-b * -b - Real.sqrt (b * b - 4 * a * c) * -b -
           (-b * Real.sqrt (b * b - 4 * a * c) -
             Real.sqrt (b * b - 4 * a * c) * Real.sqrt (b * b - 4 * a * c))) /
