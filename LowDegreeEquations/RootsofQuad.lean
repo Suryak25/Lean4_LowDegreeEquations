@@ -272,17 +272,70 @@ else if hd': discriminant a b c = 0 then
 
   simp [hy] at h₂
   simp [a_neq_zero] at h₂
-  
-  have h₃: y = -b/(2*a) :=by
-    sorry
+
+  have h₃: y = -b/(2*a) := by
+    have l : y + b/(2 * a) = - b/(2*a) + b/(2*a) := by
+      rw [h₂]
+      rw [add_comm]
+      simp [mul_neg, mul_div, neg_div]
+    rw [add_right_cancel l]
   
   assumption)
 
 else
-  QuadraticSolution.noSolution (fun x => by
+  QuadraticSolution.noSolution (fun y => by
+    have hc: 4*a ≠ 0 := by
+      simp [a_neq_zero]
+    have hc': (2 : ℝ)  ≠ 0 := by
+      simp [a_neq_zero]
+    
     by_cases h: a > 0
-    · sorry
+    · have h₁: discriminant a b c < 0 := by
+        --unfold discriminant
+        sorry
+      
+      unfold discriminant at h₁
 
-    · sorry)
+      have h₂: isSolution a b c y := by
+        sorry
+      
+      unfold isSolution at h₂
+
+      have h₃: b^2/4*a < c := by
+        rw [←div_one (a:=c),←mul_div_mul_right (a:=c) (c:=4*a) (hc:=hc),←mul_assoc,←mul_assoc,mul_rotate (a:=1),mul_one]
+        rw [mul_rotate]
+        simp [div_eq_iff_eq_mul]
+        sorry  
+      
+      have h₄: a * y ^ 2 + b * y + b^2/4*a < 0 := by
+        sorry
+
+      have h₅: a*(y + (b/(2*a)))^2 = a * y ^ 2 + b * y + b^2/(4*a) := by
+        simp [pow_two,←mul_assoc]
+        simp [mul_add]
+        simp [add_mul,mul_div,add_div]
+        rw [le_,le₁,le₂,←add_assoc,add_rotate (a:=a*y*y),←mul_two]
+        rw [mul_rotate (a:=b/2),mul_rotate (a:=y),le_',le_'',←pow_two]
+        rw [le_''']
+        assumption
+        assumption
+
+      have h₆: a*(y + b/2*a)^2 ≥ 0 := by
+        sorry
+
+      sorry  
+      
+    · have he₁: discriminant a b c < 0:=by
+        sorry
+      have he₂: isSolution a b c y := by
+        sorry
+      have h₃: b^2/4*a > c := by
+        sorry
+      have he₄: a * y ^ 2 + b * y + b^2/4*a > 0 := by
+        sorry
+      have he₅: a*(y + b/2*a)^2 ≥ 0 := by
+        sorry
+      sorry 
+    )
 
 end QuadRoots
