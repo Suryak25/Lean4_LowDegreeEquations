@@ -107,7 +107,7 @@ lemma p_of_x_factorised (x : ℝ) (h_: p_of_x a b c α=0) (h_': p_of_x a b c β=
   rw [mul_comm (a:=0), mul_zero,add_zero,add_zero] at t₁
   exact t₁
 
-/--We need to prove that the Quadratic equation has at most two unique solutions. This is done using factorised form of Quadratic polynomial and if given a third unique solution gamma it can be showed that it has to be either α or β. This is required condition for the QuadraticSolution type. We prove this lemma here-/
+/--We need to prove that the Quadratic equation has at most two unique solutions. This is done using factorised form of Quadratic polynomial and if given a third unique solution gamma it can be showed that it has to be equal to either α or β. This is required condition for the QuadraticSolution type. We prove this lemma here-/
 
 lemma QuadHasAtmostTwo (α β γ : ℝ) (hα : isSolution a b c α) (hβ : isSolution a b c β) (hγ : isSolution a b c γ) (h₁': α ≠ β ) :  γ = α ∨ γ = β := by
 
@@ -137,7 +137,7 @@ lemma QuadHasAtmostTwo (α β γ : ℝ) (hα : isSolution a b c α) (hβ : isSol
     assumption
   exact h₅
 
-/--To perform simplifications in the discriminant = 0 case part of solveQuadratic
+/--Private lemma's to perform simplifications in the discriminant = 0 case part of solveQuadratic
 -/
 private lemma le: b*(-b/(2*a)) = -(b*b)/(2*a) := by
   simp only [mul_neg, mul_div, neg_div]    
@@ -174,17 +174,79 @@ private lemma le_'': a*y*y = a*y^2:=by
 private lemma le_''': b * y + a * y ^ 2 = a * y ^ 2 + b * y := by
   rw [←add_comm (a:=b*y)]
 
+/--No solution condition with discriminant a b c has two cases: a > 0 or a < 0. This theorem has the part of proof for a > 0 case. This theorem is used in the solveQuadratic. 
+-/
+
+theorem noSolution_apos (h: a > 0) (h₁: discriminant a b c < 0) :
+  ∀ y: ℝ, ¬ isSolution a b c y := by
+      intro y h_
+      unfold discriminant at h₁
+      
+      have hc': (4 : ℝ)  ≠ 0 := by
+        simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_iff]
+
+      have h₂: b^2/(4*a) < c  := by
+        let h' := inv_pos.2 h
+        let h₁' := mul_lt_mul_of_pos_right h₁ h'
+        rw [zero_mul,sub_mul] at h₁'
+
+        simp only [inv_eq_one_div] at h₁'
+        rw [mul_comm (a:=4*a),mul_rotate,←mul_mul_div] at h₁'
+        rw [mul_div,mul_one] at h₁'
+
+        have hc_: 0 < (1/4:ℝ)  := by
+          simp only [one_div, inv_pos.2, zero_lt_four]
+
+        let v := mul_lt_mul_of_pos_right h₁' hc_
+        rw [zero_mul,sub_mul,←mul_rotate,div_mul_div_comm,mul_one,one_div_mul_cancel,one_mul,mul_comm] at v
+        simp at v
+        exact v
+        exact hc'
+        exact a_neq_zero
+
+      have h₃: a * y ^ 2 + b * y + b^2/(4*a) < 0 := by
+        let l:= add_lt_add_left h₂ (a * y ^ 2 + b * y)
+        rw [h_] at l
+        exact l
+
+      have h₄: a*(y + (b/(2*a)))^2 = a * y ^ 2 + b * y + b^2/(4*a) := by
+        simp only [pow_two,←mul_assoc]
+        simp only [mul_add]
+        simp only [add_mul,mul_div,add_div]
+        rw [le_,le₁,le₂,←add_assoc,add_rotate (a:=a*y*y),←mul_two]
+        rw [mul_rotate (a:=b/2),mul_rotate (a:=y),le_',le_'',←pow_two]
+        rw [le_''']
+        assumption
+        assumption
+
+      have h₅: a*(y + b/(2*a))^2 ≥ 0 := by
+        simp [mul_lt_mul_of_pos_left, sq_nonneg, zero_lt_two, h]
+      
+      rw [←h₄] at h₃
+      let h₆ : ¬(a * (y + b / (2 * a)) ^ 2 < 0) := not_lt_of_ge  h₅
+      contradiction
+
+/--No solution condition with discriminant a b c has two cases: a > 0 or a < 0. This theorem has a part of proof for a < 0 case. This theorem is used in the solveQuadratic. 
+-/
+
+theorem a_neg_isSolution: isSolution a b c x → isSolution (-a) (-b) (-c) x := by
+  unfold isSolution
+  conv=>
+    lhs
+
+  sorry
+
 /--This is the function that solves the Quadratic equation. We use the discriminant to determine whether the equation has one, two, or no solutions. If the discriminant is greater than 0, then the equation has two solutions. If the discriminant is equal to 0, then the equation has one solution. If the discriminant is less than 0, then the equation has no solution-/
 
-noncomputable def solveQuadratic : QuadraticSolution a b c := 
+noncomputable def solveQuadratic : QuadraticSolution a b c :=
 
 if hd: discriminant a b c > 0 then
   let x := (-b + Real.sqrt (discriminant a b c))/(2*a)
   let y := (-b - Real.sqrt (discriminant a b c))/(2*a)
-  let h₂':= x≠y 
+  let h₂':= x≠y
 
   have hx : isSolution a b c x := by
-    dsimp 
+    dsimp
     unfold discriminant
     unfold isSolution
     apply Quadratic.root₁_is_root a b c
@@ -196,13 +258,17 @@ if hd: discriminant a b c > 0 then
     dsimp
     unfold discriminant
     unfold isSolution
-    apply Quadratic.root₂_is_root a b c 
+    apply Quadratic.root₂_is_root a b c
     apply le_of_lt hd
     assumption
 
-  QuadraticSolution.twoSolution x y 
+/-Above it is proved that in two solution case (discriminant a b c > 0), the two roots are actually the roots.
+In the two solution case, it is also required to prove that for all x and y as the roots of a quadratic equation with discriminant a b c > 0, these x and y are the only roots and if some z is a root, then z is either x or y.
+The goal is accomplished using two theorems prooved above p_of_x_factorised and QuadHasAtmostTwo-/
+
+  QuadraticSolution.twoSolution x y
     hx hy (fun z hz => QuadHasAtmostTwo a b c a_neq_zero x y z hx hy hz)
-  
+
 else if hd': discriminant a b c = 0 then
   let x := -b/(2*a)
 
@@ -234,117 +300,75 @@ else if hd': discriminant a b c = 0 then
     rw [←hd',add_rotate,←mul_two]
     simp only [add_right_neg, true_or]
     assumption
-  
-  QuadraticSolution.oneSolution x hx (fun y hy => by 
-  simp only [discriminant] at hd'
-  unfold isSolution at hy; unfold isSolution at hx
-  
-  have hc: 4*a ≠ 0 := by
-      simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, a_neq_zero, or_self, not_false_iff]
-  have hc': (2 : ℝ)  ≠ 0 := by
-      simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_iff]
-  
-  have h_: b^2/(4*a) - c = 0 := by
-    rw [←div_one (a:=c),←mul_div_mul_right (a:=c) (c:=4*a) (hc:=hc),←mul_assoc,←mul_assoc,mul_rotate (a:=1),mul_one]
-    rw [mul_rotate,←sub_div]
-    simp only [div_eq_zero_iff, mul_eq_zero, OfNat.ofNat_ne_zero, false_or]
-    simp only [a_neq_zero,or_false]
-    assumption
-  
-  have h₁: b^2/(4*a) = c:= by
-    simp only [sub_eq_iff_eq_add,zero_add] at h_
-    assumption
 
-  rw [←h₁] at hy
-  rw [←hy] at hx
+/-Above it is proved that in one solution case (discriminant a b c = 0), the root of the quadratic equation is -b/(2*a).
+In the one solution case, it is also required to prove that for all quadratic equations with discriminant a b c = 0, the roots of the quadratic equation x = y = -b/(2*a) are the same and there is only one unique root.
+The goal is accomplished by completing square method (using discriminant) and simplification-/
 
-  have h₂: a*(y + (b/(2*a)))^2 = a * y ^ 2 + b * y + b ^ 2 / (4 * a):= by
-    simp only [pow_two,←mul_assoc]
-    simp only [mul_add]
-    simp only [add_mul,mul_div,add_div]
-    rw [le_,le₁,le₂,←add_assoc,add_rotate (a:=a*y*y),←mul_two]
-    rw [mul_rotate (a:=b/2),mul_rotate (a:=y),le_',le_'',←pow_two]
-    rw [le_''']  
-    assumption
-    assumption  
-
-  simp only [hy, mul_eq_zero, zero_lt_two, pow_eq_zero_iff] at h₂
-  simp only [a_neq_zero, false_or] at h₂
-
-  have h₃: y = -b/(2*a) := by
-    have l : y + b/(2 * a) = - b/(2*a) + b/(2*a) := by
-      rw [h₂]
-      rw [add_comm]
-      simp only [neg_div, add_right_neg]
-    rw [add_right_cancel l]
+  QuadraticSolution.oneSolution x hx (fun y hy => by
   
-  assumption)
+    simp only [discriminant] at hd'
+    unfold isSolution at hy; unfold isSolution at hx
+
+    have hc: 4*a ≠ 0 := by
+        simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, a_neq_zero, or_self, not_false_iff]
+
+    have h_: b^2/(4*a) - c = 0 := by
+      rw [←div_one (a:=c),←mul_div_mul_right (a:=c) (c:=4*a) (hc:=hc),←mul_assoc,←mul_assoc,mul_rotate (a:=1),mul_one]
+      rw [mul_rotate,←sub_div]
+      simp only [div_eq_zero_iff, mul_eq_zero, OfNat.ofNat_ne_zero, false_or]
+      simp only [a_neq_zero,or_false]
+      assumption
+
+    have h₁: b^2/(4*a) = c:= by
+      simp only [sub_eq_iff_eq_add,zero_add] at h_
+      assumption
+
+    rw [←h₁] at hy
+    rw [←hy] at hx
+
+    have h₂: a*(y + (b/(2*a)))^2 = a * y ^ 2 + b * y + b ^ 2 / (4 * a):= by
+      simp only [pow_two,←mul_assoc]
+      simp only [mul_add]
+      simp only [add_mul,mul_div,add_div]
+      rw [le_,le₁,le₂,←add_assoc,add_rotate (a:=a*y*y),←mul_two]
+      rw [mul_rotate (a:=b/2),mul_rotate (a:=y),le_',le_'',←pow_two]
+      rw [le_''']
+      assumption
+      assumption
+
+    simp only [hy, mul_eq_zero, zero_lt_two, pow_eq_zero_iff] at h₂
+    simp only [a_neq_zero, false_or] at h₂
+
+    have h₃: y = -b/(2*a) := by
+      have l : y + b/(2 * a) = - b/(2*a) + b/(2*a) := by
+        rw [h₂]
+        rw [add_comm]
+        simp only [neg_div, add_right_neg]
+      rw [add_right_cancel l]
+
+    assumption)
+
+/-The no solution case is proved by contradiction. This case is when discriminant a b c < 0. Here, to prove there exists no solution, we assume there exist a root: y for a quadratic equation with discriminant a b c < 0, and then using completing square method we arrive at a contradiction. Hence, proving that there exists no such root: y.
+The proof has two cases: a > 0 and a < 0. noSolution_apos and noSolution_aneg are the two theorems respectively used to prove the two cases of no solution. 
+-/
 
 else
   QuadraticSolution.noSolution (fun y => by
+    
     intro h_
     unfold isSolution at h_
-      
-    have hc: 4*a ≠ 0 := by
-      simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, a_neq_zero, or_self, not_false_iff]
-    have hc': (4 : ℝ)  ≠ 0 := by
-      simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_iff]
-    
+
     by_cases h: a > 0
     · have h₁: discriminant a b c < 0 := by
         let trich:= lt_trichotomy (discriminant a b c) 0
         cases trich
         case inl _ => assumption
         case inr h => simp [hd,hd'] at h
-      
-      unfold discriminant at h₁
-
-      have h₂: b^2/(4*a) < c  := by
-        let h' := inv_pos.2 h
-        let h₁' := mul_lt_mul_of_pos_right h₁ h'
-        rw [zero_mul,sub_mul] at h₁'
-
-        simp only [inv_eq_one_div] at h₁'
-        rw [mul_comm (a:=4*a),mul_rotate,←mul_mul_div] at h₁'
-        rw [mul_div,mul_one] at h₁'
-        
-        have hc_: 0 < (1/4:ℝ)  := by
-          have v': (4 : ℝ)⁻¹ > 0 := by simp
-          simp only [one_div, inv_pos.2, zero_lt_four]
-          
-        let v := mul_lt_mul_of_pos_right h₁' hc_ 
-        rw [zero_mul,sub_mul,←mul_rotate,div_mul_div_comm,mul_one,one_div_mul_cancel,one_mul,mul_comm] at v
-        simp at v
-        exact v
-        exact hc'
-        exact a_neq_zero
-
-      have h₃: a * y ^ 2 + b * y + b^2/(4*a) < 0 := by
-        let l:= ←lt_of_add_lt_add_left h₂
-        sorry
-
-      have h₄: a*(y + (b/(2*a)))^2 = a * y ^ 2 + b * y + b^2/(4*a) := by
-        simp only [pow_two,←mul_assoc]
-        simp only [mul_add]
-        simp only [add_mul,mul_div,add_div]
-        rw [le_,le₁,le₂,←add_assoc,add_rotate (a:=a*y*y),←mul_two]
-        rw [mul_rotate (a:=b/2),mul_rotate (a:=y),le_',le_'',←pow_two]
-        rw [le_''']
-        assumption
-        assumption
-
-      have h₅: a*(y + b/2*a)^2 ≥ 0 := by
-        sorry
-      
-      rw [←h₄] at h₃
-      simp [h₃,h₅]
+      let l := noSolution_apos a b c a_neq_zero h h₁ y
+      contradiction
     · sorry
     )
 
-end QuadRoots
 
-#check LinearOrder
-#check LinearOrderedAddCommGroup
-#check LinearOrderedCommRing
-#check mul_lt_mul_of_pos_left
-#check lt_of_add_lt_add_left
+end QuadRoots
