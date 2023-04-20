@@ -284,7 +284,7 @@ else
   QuadraticSolution.noSolution (fun y => by
     intro h_
     unfold isSolution at h_
-
+      
     have hc: 4*a ≠ 0 := by
       simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, a_neq_zero, or_self, not_false_iff]
     have hc': (4 : ℝ)  ≠ 0 := by
@@ -299,7 +299,7 @@ else
       
       unfold discriminant at h₁
 
-      have h₃: b^2/(4*a) - c < 0 := by
+      have h₂: b^2/(4*a) < c  := by
         let h' := inv_pos.2 h
         let h₁' := mul_lt_mul_of_pos_right h₁ h'
         rw [zero_mul,sub_mul] at h₁'
@@ -314,14 +314,16 @@ else
           
         let v := mul_lt_mul_of_pos_right h₁' hc_ 
         rw [zero_mul,sub_mul,←mul_rotate,div_mul_div_comm,mul_one,one_div_mul_cancel,one_mul,mul_comm] at v
+        simp at v
         exact v
         exact hc'
         exact a_neq_zero
 
-      have h₄: a * y ^ 2 + b * y + b^2/(4*a) < 0 := by
-        
+      have h₃: a * y ^ 2 + b * y + b^2/(4*a) < 0 := by
+        let l:= ←lt_of_add_lt_add_left h₂
         sorry
-      have h₅: a*(y + (b/(2*a)))^2 = a * y ^ 2 + b * y + b^2/(4*a) := by
+
+      have h₄: a*(y + (b/(2*a)))^2 = a * y ^ 2 + b * y + b^2/(4*a) := by
         simp only [pow_two,←mul_assoc]
         simp only [mul_add]
         simp only [add_mul,mul_div,add_div]
@@ -331,11 +333,11 @@ else
         assumption
         assumption
 
-      have h₆: a*(y + b/2*a)^2 ≥ 0 := by
+      have h₅: a*(y + b/2*a)^2 ≥ 0 := by
         sorry
-      rw [←h₅] at h₄
-      sorry  
-
+      
+      rw [←h₄] at h₃
+      simp [h₃,h₅]
     · sorry
     )
 
@@ -345,4 +347,4 @@ end QuadRoots
 #check LinearOrderedAddCommGroup
 #check LinearOrderedCommRing
 #check mul_lt_mul_of_pos_left
-#check lt_of_le_of_ne
+#check lt_of_add_lt_add_left
