@@ -128,21 +128,19 @@ lemma QuadHasAtmostTwo (α β γ : ℝ) (hα : isSolution a b c α) (hβ : isSol
 
   rw [h₃] at h₄
 
-  simp [a_neq_zero] at h₄
+  simp only [mul_eq_zero, a_neq_zero, false_or] at h₄
   
-  have h_': a ≠ 0 := by
-    simp [a_neq_zero]
-  simp [h_'] at h₄
+  simp only at h₄
     
   have h₅: γ = α ∨ γ = β := by
-    simp [sub_eq_zero] at h₄
+    simp only [sub_eq_zero] at h₄
     assumption
   exact h₅
 
 /--To perform simplifications in the discriminant = 0 case part of solveQuadratic
 -/
 private lemma le: b*(-b/(2*a)) = -(b*b)/(2*a) := by
-  simp [mul_neg, mul_div, neg_div]    
+  simp only [mul_neg, mul_div, neg_div]    
 
 private lemma le': a*(b*b/(a * a * 4)) = b*b/(4*a) := by
   rw [mul_div,← mul_assoc,mul_rotate]
@@ -151,13 +149,13 @@ private lemma le': a*(b*b/(a * a * 4)) = b*b/(4*a) := by
     rw [←mul_rotate (a:=4),mul_div_mul_right (c:=a) (hc:=a_neq_zero)]
 
 private lemma le_: a * b / (2 * a) = b / 2 := by
-  simp [mul_div, mul_comm,mul_div_mul_left (c:=a) (hc:=a_neq_zero)]
+  simp only [mul_div, mul_comm,mul_div_mul_left (c:=a) (hc:=a_neq_zero)]
 
 private lemma le₁: b / 2 * b / (2 * a) = b * b / (4 * a) := by
-  simp [mul_div, mul_comm]
+  simp only [mul_div, mul_comm]
   rw [←mul_one (a:=2),←mul_assoc,mul_rotate,mul_rotate,one_mul,mul_comm (a:=a)]
-  simp [div_div,←mul_assoc,←Quadratic.two_mul_two]
-  simp [mul_comm]
+  simp only [mul_one, div_div, mul_assoc, Quadratic.two_mul_two]
+  simp only [mul_comm,mul_rotate']
 
 private lemma le₂: a * y * b / (2 * a) = b/2 * y := by
   conv=>
@@ -218,102 +216,115 @@ else if hd': discriminant a b c = 0 then
     unfold isSolution
 
     have hc: 4*a ≠ 0 := by
-      simp [a_neq_zero] 
+      simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, a_neq_zero, or_self, not_false_iff]
     have hc': (2 : ℝ)  ≠ 0 := by
-      simp [a_neq_zero]
+      simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_iff]
 
-    simp [neg_sq]
-    simp [pow_two, mul_assoc, mul_comm, mul_left_comm]
+    simp only [div_pow,neg_sq]
+    simp only [pow_two, mul_assoc, mul_comm, mul_left_comm]
     rw [←mul_assoc]
-    simp [← Quadratic.two_mul_two]
+    simp only [← Quadratic.two_mul_two]
     rw [add_rotate,mul_comm (a:=a)]
     rw [le]
     rw [← mul_div_mul_right (a:=-(b*b)) (c:=2) (hc:=hc'),←div_one (a:=c)]
     rw [← mul_div_mul_right (a:=c) (c:=4*a) (hc:=hc),←mul_assoc,←mul_assoc,mul_rotate (a:=1),mul_one, mul_rotate, mul_rotate,← Quadratic.two_mul_two]
     rw [le',mul_rotate]
-    simp [add_div]
+    simp only [neg_mul]
     simp [←add_div]
     rw [←hd',add_rotate,←mul_two]
-    simp
+    simp only [add_right_neg, true_or]
     assumption
   
   QuadraticSolution.oneSolution x hx (fun y hy => by 
-  simp [discriminant] at hd'
+  simp only [discriminant] at hd'
   unfold isSolution at hy; unfold isSolution at hx
   
   have hc: 4*a ≠ 0 := by
-      simp [a_neq_zero]
+      simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, a_neq_zero, or_self, not_false_iff]
   have hc': (2 : ℝ)  ≠ 0 := by
-      simp [a_neq_zero]
+      simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_iff]
   
   have h_: b^2/(4*a) - c = 0 := by
     rw [←div_one (a:=c),←mul_div_mul_right (a:=c) (c:=4*a) (hc:=hc),←mul_assoc,←mul_assoc,mul_rotate (a:=1),mul_one]
     rw [mul_rotate,←sub_div]
-    simp [div_eq_iff_eq_mul]
-    simp [a_neq_zero]
+    simp only [div_eq_zero_iff, mul_eq_zero, OfNat.ofNat_ne_zero, false_or]
+    simp only [a_neq_zero,or_false]
     assumption
   
   have h₁: b^2/(4*a) = c:= by
-    simp [sub_eq_iff_eq_add] at h_
+    simp only [sub_eq_iff_eq_add,zero_add] at h_
     assumption
 
   rw [←h₁] at hy
   rw [←hy] at hx
 
   have h₂: a*(y + (b/(2*a)))^2 = a * y ^ 2 + b * y + b ^ 2 / (4 * a):= by
-    simp [pow_two,←mul_assoc]
-    simp [mul_add]
-    simp [add_mul,mul_div,add_div]
+    simp only [pow_two,←mul_assoc]
+    simp only [mul_add]
+    simp only [add_mul,mul_div,add_div]
     rw [le_,le₁,le₂,←add_assoc,add_rotate (a:=a*y*y),←mul_two]
     rw [mul_rotate (a:=b/2),mul_rotate (a:=y),le_',le_'',←pow_two]
     rw [le_''']  
     assumption
     assumption  
 
-  simp [hy] at h₂
-  simp [a_neq_zero] at h₂
+  simp only [hy, mul_eq_zero, zero_lt_two, pow_eq_zero_iff] at h₂
+  simp only [a_neq_zero, false_or] at h₂
 
   have h₃: y = -b/(2*a) := by
     have l : y + b/(2 * a) = - b/(2*a) + b/(2*a) := by
       rw [h₂]
       rw [add_comm]
-      simp [mul_neg, mul_div, neg_div]
+      simp only [neg_div, add_right_neg]
     rw [add_right_cancel l]
   
   assumption)
 
 else
   QuadraticSolution.noSolution (fun y => by
+    intro h_
+    unfold isSolution at h_
+
     have hc: 4*a ≠ 0 := by
-      simp [a_neq_zero]
-    have hc': (2 : ℝ)  ≠ 0 := by
-      simp [a_neq_zero]
+      simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, a_neq_zero, or_self, not_false_iff]
+    have hc': (4 : ℝ)  ≠ 0 := by
+      simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_iff]
     
     by_cases h: a > 0
     · have h₁: discriminant a b c < 0 := by
-        --unfold discriminant
-        sorry
+        let trich:= lt_trichotomy (discriminant a b c) 0
+        cases trich
+        case inl _ => assumption
+        case inr h => simp [hd,hd'] at h
       
       unfold discriminant at h₁
 
-      have h₂: isSolution a b c y := by
-        sorry
-      
-      unfold isSolution at h₂
+      have h₃: b^2/(4*a) - c < 0 := by
+        let h' := inv_pos.2 h
+        let h₁' := mul_lt_mul_of_pos_right h₁ h'
+        rw [zero_mul,sub_mul] at h₁'
 
-      have h₃: b^2/4*a < c := by
-        rw [←div_one (a:=c),←mul_div_mul_right (a:=c) (c:=4*a) (hc:=hc),←mul_assoc,←mul_assoc,mul_rotate (a:=1),mul_one]
-        rw [mul_rotate]
-        simp [div_eq_iff_eq_mul]
-        sorry  
-      
-      have h₄: a * y ^ 2 + b * y + b^2/4*a < 0 := by
-        sorry
+        simp only [inv_eq_one_div] at h₁'
+        rw [mul_comm (a:=4*a),mul_rotate,←mul_mul_div] at h₁'
+        rw [mul_div,mul_one] at h₁'
+        
+        have hc_: 0 < (1/4:ℝ)  := by
+          have v': (4 : ℝ)⁻¹ > 0 := by simp
+          simp only [one_div, inv_pos.2, zero_lt_four]
+          
+        let v := mul_lt_mul_of_pos_right h₁' hc_ 
+        rw [zero_mul,sub_mul,←mul_rotate,div_mul_div_comm,mul_one,one_div_mul_cancel,one_mul,mul_comm] at v
+        exact v
+        exact hc'
+        exact a_neq_zero
 
+      have h₄: a * y ^ 2 + b * y + b^2/(4*a) < 0 := by
+        
+        sorry
       have h₅: a*(y + (b/(2*a)))^2 = a * y ^ 2 + b * y + b^2/(4*a) := by
-        simp [pow_two,←mul_assoc]
-        simp [mul_add]
-        simp [add_mul,mul_div,add_div]
+        simp only [pow_two,←mul_assoc]
+        simp only [mul_add]
+        simp only [add_mul,mul_div,add_div]
         rw [le_,le₁,le₂,←add_assoc,add_rotate (a:=a*y*y),←mul_two]
         rw [mul_rotate (a:=b/2),mul_rotate (a:=y),le_',le_'',←pow_two]
         rw [le_''']
@@ -322,20 +333,16 @@ else
 
       have h₆: a*(y + b/2*a)^2 ≥ 0 := by
         sorry
-
+      rw [←h₅] at h₄
       sorry  
-      
-    · have he₁: discriminant a b c < 0:=by
-        sorry
-      have he₂: isSolution a b c y := by
-        sorry
-      have h₃: b^2/4*a > c := by
-        sorry
-      have he₄: a * y ^ 2 + b * y + b^2/4*a > 0 := by
-        sorry
-      have he₅: a*(y + b/2*a)^2 ≥ 0 := by
-        sorry
-      sorry 
+
+    · sorry
     )
 
 end QuadRoots
+
+#check LinearOrder
+#check LinearOrderedAddCommGroup
+#check LinearOrderedCommRing
+#check mul_lt_mul_of_pos_left
+#check lt_of_le_of_ne
