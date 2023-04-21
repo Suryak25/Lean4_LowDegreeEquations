@@ -12,7 +12,7 @@ noncomputable def root₁ (a b c : ℝ) : ℝ :=
 (-b + Real.sqrt (b^2 - 4*a*c)) / (2*a)
 
 /-Defining the two roots of quadratic equation-/
-noncomputable def root₂(a b c : ℝ) (h:(b^2 - 4*a*c) ≥ 0): ℝ :=
+noncomputable def root₂(a b c : ℝ) : ℝ :=
 (-b - Real.sqrt (b^2 - 4*a*c)) / (2*a) 
 
 def two_mul_two (R : Type) [Ring R] : (4: R) = (2 : R) * (2: R) := by /-proof that 2(ℝ) * 2(ℝ) = 4(ℝ) -/
@@ -157,7 +157,7 @@ Essentially it is simplification using various theorems, and split into major 3 
 and are simplified in private lemmas l'₁ (specifically pass h:= a ≠ 0 as it involves multiplication and addition of 2*a) and l'₂.
 Once the major 2 terms are simplified, its rewritten and then ring_nf tactic is applied along with some more simplification theorems-/
 
-theorem root₂_is_root (h:(b^2 - 4*a*c) ≥ 0) (a_neq_zero: a≠0): a*(root₂ a b c h)^2 + b*(root₂ a b c h) + c = 0 := by
+theorem root₂_is_root (h:(b^2 - 4*a*c) ≥ 0) (a_neq_zero: a≠0): a*(root₂ a b c)^2 + b*(root₂ a b c) + c = 0 := by
   simp only [root₂, div_pow]
   simp only [pow_two, mul_left_comm, mul_sub, sub_mul] at h ⊢
   rw [l'₁]
