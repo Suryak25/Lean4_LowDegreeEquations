@@ -226,7 +226,7 @@ theorem noSolution_apos (h: a > 0) (h₁: discriminant a b c < 0) :
       let h₆ : ¬(a * (y + b / (2 * a)) ^ 2 < 0) := not_lt_of_ge  h₅
       contradiction
 
-/--No solution condition with discriminant a b c has two cases: a > 0 or a < 0. This theorem has a part of proof for a < 0 case. This theorem is used in the solveQuadratic. 
+/--No solution condition with discriminant a b c has two cases: a > 0 or a < 0. This theorem has a part of proof for a < 0 case. This theorem is proof that if the a b c of isSolution changed to -a -b -c, then the isSolution is still true. 
 -/
 
 theorem isSolution_eq_aneg_isSol: isSolution a b c x → isSolution (-a) (-b) (-c) x := by
