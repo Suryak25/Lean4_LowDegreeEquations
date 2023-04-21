@@ -54,7 +54,7 @@ lemma p_of_x_factorised (x : ℝ) (h_: p_of_x a b c α=0) (h_': p_of_x a b c β=
   have t₁: p_of_x a b c x = q_of_x x + a₁*x + a₂ := by
     simp only [t]
     ring_nf
-    simp [mul_comm]
+    simp only [mul_comm]
     dsimp [p_of_x]
 
   have t₂: q_of_x α + a₁*α + a₂ = 0 := by
@@ -281,9 +281,9 @@ else if hd': discriminant a b c = 0 then
 
   have hx : isSolution a b c x := by
     dsimp
-    simp [discriminant,pow_two] at hd'
+    simp only [discriminant, pow_two] at hd'
     have hd': b*b = 4*a*c:= by
-      simp [sub_eq_iff_eq_add] at hd'
+      simp only [sub_eq_iff_eq_add, zero_add] at hd'
       assumption
 
     unfold isSolution
