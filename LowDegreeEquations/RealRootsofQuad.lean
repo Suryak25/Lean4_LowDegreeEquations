@@ -395,8 +395,8 @@ else
         exact a_neg'
       
       have a_neg_neq_zero: -a ≠ 0 := by
-        --let l':= ne'
-        sorry
+        apply neg_ne_zero.mpr
+        assumption
       
       let h__:= isSolution_eq_aneg_isSol (a) (b) (c) h_
       let l:= noSolution_apos (-a) (-b) (-c) a_neg_neq_zero a_neg_gt_zero h₂ y
