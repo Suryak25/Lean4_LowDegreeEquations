@@ -362,26 +362,46 @@ The proof has two cases: a > 0 and a < 0. noSolution_apos and noSolution_aneg ar
 
 else
   QuadraticSolution.noSolution (fun y => by
-    
     intro h_
-    unfold isSolution at h_
-
-    by_cases h: a > 0
-    · have h₁: discriminant a b c < 0 := by
+    have h₁: discriminant a b c < 0 := by
         let trich:= lt_trichotomy (discriminant a b c) 0
         cases trich
         case inl _ => assumption
         case inr h => simp [hd,hd'] at h
+
+    by_cases h: a > 0
+    · unfold isSolution at h_
       let l := noSolution_apos a b c a_neq_zero h h₁ y
       contradiction
 
-    · have h₁: discriminant a b c < 0 := by
-        let trich:= lt_trichotomy (discriminant a b c) 0
-        cases trich
-        case inl _ => assumption
-        case inr h => simp [hd,hd'] at h
-      sorry      
+    · have h₂: discriminant (-a) (-b) (-c) < 0 := by
+        unfold discriminant
+        conv=>
+          lhs
+          ring_nf
+          rw [←mul_rotate]
+        exact h₁ 
+      
+      have a_neg: a < 0 := by
+        simp only [not_lt] at h
+        let l:= lt_of_le_of_ne' h a_neq_zero.symm
+        exact l
+
+      have minus_one_lt_zero: (-1 : ℝ) < 0 := by
+        simp only [Left.neg_neg_iff, zero_lt_one]
+
+      have a_neg_gt_zero: -a > 0 := by
+        let a_neg':= mul_lt_mul_of_neg_left (a_neg) (minus_one_lt_zero) 
+        rw [neg_one_mul,neg_zero,neg_one_mul] at a_neg'
+        exact a_neg'
+      
+      have a_neg_neq_zero: -a ≠ 0 := by
+        --let l':= ne'
+        sorry
+      
+      let h__:= isSolution_eq_aneg_isSol (a) (b) (c) h_
+      let l:= noSolution_apos (-a) (-b) (-c) a_neg_neq_zero a_neg_gt_zero h₂ y
+      contradiction     
     )
-
-
+    
 end QuadRoots
