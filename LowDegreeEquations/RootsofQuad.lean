@@ -229,12 +229,19 @@ theorem noSolution_apos (h: a > 0) (h₁: discriminant a b c < 0) :
 /--No solution condition with discriminant a b c has two cases: a > 0 or a < 0. This theorem has a part of proof for a < 0 case. This theorem is used in the solveQuadratic. 
 -/
 
-theorem a_neg_isSolution: isSolution a b c x → isSolution (-a) (-b) (-c) x := by
+theorem isSolution_eq_aneg_isSol: isSolution a b c x → isSolution (-a) (-b) (-c) x := by
+  intro h
   unfold isSolution
-  conv=>
-    lhs
-
-  sorry
+  unfold isSolution at h
+  
+  have h': (-1:ℝ)  ≠ 0 := by
+    simp only [ne_eq, neg_eq_zero, one_ne_zero, not_false_iff]
+  simp only [neg_mul]
+  rw [←mul_right_inj' (a:=-1)]
+  simp
+  rw [←add_assoc,←add_rotate,add_comm,add_rotate',add_comm (a:=c),←add_assoc]
+  exact h
+  exact h'
 
 /--This is the function that solves the Quadratic equation. We use the discriminant to determine whether the equation has one, two, or no solutions. If the discriminant is greater than 0, then the equation has two solutions. If the discriminant is equal to 0, then the equation has one solution. If the discriminant is less than 0, then the equation has no solution-/
 
@@ -367,7 +374,13 @@ else
         case inr h => simp [hd,hd'] at h
       let l := noSolution_apos a b c a_neq_zero h h₁ y
       contradiction
-    · sorry
+
+    · have h₁: discriminant a b c < 0 := by
+        let trich:= lt_trichotomy (discriminant a b c) 0
+        cases trich
+        case inl _ => assumption
+        case inr h => simp [hd,hd'] at h
+      sorry      
     )
 
 
