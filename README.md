@@ -8,13 +8,13 @@ In algebra the Quadratic equation in one variable is of the form $ax^2+bx+c = 0$
 This project is an attempt to formalise, implement and prove solutions to quadratic and possibly cubic equations (Low degree equations) in lean4.
 
 ## Road Map
-* Implementing quadratic equations and its roots (only real solutions as $\mathbb{C}$ is not yet ported to lean4)
+* Implementing quadratic equation and its roots (only real solutions as $\mathbb{C}$ is not yet ported to lean4).
 * Proving the roots are actually the solution to the quadratic equation.
 * Proving that for a Quadratic equation there exist atmost two roots (distinct roots).
 * Proving that if roots exist for a Quadratic equation and then how many roots (Two distinct or one unique)
-* No solution case, proving no y exist for all Quadratic eqns with Discriminant < 0. The proof has two case: a > 0 and a < 0.
+* No solution case, proving no y exist for all Quadratic eqns with Discriminant < 0. The proof has two cases: a > 0 and a < 0.
 ## Completed
-* Implementing quadratic equations and its roots
+* Implementing quadratic equation and its roots (for all a b c x : $\mathbb{R}$)
 * Proving the roots are actually the solution to the quadratic equation.
 * Proving that for a Quadratic equation there exist atmost two roots (distinct roots).
 * Proving that if roots exist for a Quadratic equation and then how many roots (Two distinct or one unique)
