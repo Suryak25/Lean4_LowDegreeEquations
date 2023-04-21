@@ -12,10 +12,13 @@ This project is an attempt to formalise, implement and prove solutions to quadra
 * Proving the roots are actually the solution to the quadratic equation.
 * Proving that for a Quadratic equation there exist atmost two roots (distinct roots).
 * Proving that if roots exist for a Quadratic equation and then how many roots (Two distinct or one unique)
+* No solution case, proving no y exist for all Quadratic eqns with Discriminant < 0. The proof has two case: a > 0 and a < 0.
 ## Completed
 * Implementing quadratic equations and its roots
 * Proving the roots are actually the solution to the quadratic equation.
 * Proving that for a Quadratic equation there exist atmost two roots (distinct roots).
+* Proving that if roots exist for a Quadratic equation and then how many roots (Two distinct or one unique)
+* No solution a > 0 case proved.
 ## References
 * [Proofwiki](https://proofwiki.org/wiki/Definition:Quadratic_Equation#:~:text=An%20algebraic%20equation%20of%20the,b2%E2%88%92aca)
 * [Wikipedia](https://en.wikipedia.org/wiki/Quadratic_equation)
