@@ -18,7 +18,7 @@ This project is an attempt to formalise, implement and prove solutions to quadra
 * Proving the roots are actually the solution to the quadratic equation.
 * Proving that for a Quadratic equation there exist atmost two roots (distinct roots).
 * Proving that if roots exist for a Quadratic equation and then how many roots (Two distinct or one unique)
-* No solution a > 0 case proved.
+* No solution for both a > 0 and a < 0 cases proved.
 ## References
 * [Proofwiki](https://proofwiki.org/wiki/Definition:Quadratic_Equation#:~:text=An%20algebraic%20equation%20of%20the,b2%E2%88%92aca)
 * [Wikipedia](https://en.wikipedia.org/wiki/Quadratic_equation)

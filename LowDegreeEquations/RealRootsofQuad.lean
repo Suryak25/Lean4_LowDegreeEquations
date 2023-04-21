@@ -250,7 +250,6 @@ noncomputable def solveQuadratic : QuadraticSolution a b c :=
 if hd: discriminant a b c > 0 then
   let x := (-b + Real.sqrt (discriminant a b c))/(2*a)
   let y := (-b - Real.sqrt (discriminant a b c))/(2*a)
-  let h₂':= x≠y
 
   have hx : isSolution a b c x := by
     dsimp
