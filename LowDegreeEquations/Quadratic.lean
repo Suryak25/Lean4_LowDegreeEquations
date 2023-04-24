@@ -42,7 +42,7 @@ private lemma l₁ (a_neq_zero: a≠0): (b * ((-b + Real.sqrt (b * b - 4*a*c)) /
     rw [mul_rotate (a:=b) (b:=(Real.sqrt (b * b - 4 * a * c))) (c:=2*a)]
     rw [mul_rotate (a:=Real.sqrt (b * b - 4 * a * c)) (b:=2*a) (c:=b)]
     simp only [←mul_assoc]
-    simp [←two_mul_two]
+    simp only [←two_mul_two]
 
 /--Simplifying the term with power 2 of root₁.
 The simplification RHS is the expected simplification (done by hand). 
@@ -76,7 +76,7 @@ theorem root₁_is_root (h:(b^2 - 4*a*c) ≥ 0) (a_neq_zero: a≠0): a*(root₁ 
   rw [l₂]
   ring_nf
   simp only [pow_two]
-  simp [←mul_rotate (a:=a⁻¹*a⁻¹) (b:=a*a) (c:=c)]
+  simp only [←mul_rotate (a:=a⁻¹*a⁻¹) (b:=a*a) (c:=c)]
   rw [mul_mul_mul_comm]
   rw[←one_div]
   rw [one_div_mul_cancel (h:=a_neq_zero)]
@@ -107,7 +107,7 @@ private lemma l'₁ (a_neq_zero: a≠0): (b * ((-b - Real.sqrt (b * b - 4*a*c)) 
     rw [mul_rotate (a:=b) (b:=(Real.sqrt (b * b - 4 * a * c))) (c:=2*a)]
     rw [mul_rotate (a:=Real.sqrt (b * b - 4 * a * c)) (b:=2*a) (c:=b)]
     simp only [←mul_assoc]
-    simp [←two_mul_two]
+    simp only [←two_mul_two]
 
 /-- Simplifying term with power 2 of root₂.
 The RHS is the expected hand simplified term.
@@ -164,7 +164,7 @@ theorem root₂_is_root (h:(b^2 - 4*a*c) ≥ 0) (a_neq_zero: a≠0): a*(root₂ 
   rw [l'₂]
   ring_nf
   simp only [pow_two]
-  simp [←mul_rotate (a:=a⁻¹*a⁻¹) (b:=a*a) (c:=c)]
+  simp only [←mul_rotate (a:=a⁻¹*a⁻¹) (b:=a*a) (c:=c)]
   rw [mul_mul_mul_comm]
   rw[←one_div]
   rw [one_div_mul_cancel (h:=a_neq_zero)]
